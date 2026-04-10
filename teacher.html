@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>回答一覧</title>
+
+<style>
+
+body{
+font-family:sans-serif;
+padding:30px;
+background:#fafafa;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+border:1px solid #ccc;
+padding:12px;
+}
+
+tr:hover{
+background:#f0f0f0;
+cursor:pointer;
+}
+
+#modal{
+
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+
+background:rgba(0,0,0,0.8);
+
+display:none;
+
+justify-content:center;
+align-items:center;
+
+}
+
+#modalContent{
+
+background:white;
+padding:40px;
+font-size:40px;
+max-width:80%;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>回答一覧</h1>
+
+<table id="table">
+
+<tr>
+<th>時間</th>
+<th>出席番号</th>
+<th>回答</th>
+</tr>
+
+</table>
+
+<div id="modal">
+<div id="modalContent"></div>
+</div>
+
+<script>
+
+const SCRIPT_URL="https://script.google.com/macros/s/AKfycbwZp3lvaxR5qqlB8jRBb3xuHvi1a-ZwYZ0MX4WcOZp7zUIV8qsG3Nh5KQjUSgdv-VIG/exec";
+
+function load(){
+
+fetch(SCRIPT_URL)
+.then(r=>r.json())
+.then(data=>{
+
+const table=document.getElementById("table");
+
+table.innerHTML=`
+<tr>
+<th>時間</th>
+<th>出席番号</th>
+<th>回答</th>
+</tr>`;
+
+data.reverse().forEach(d=>{
+
+const tr=document.createElement("tr");
+
+tr.innerHTML=`
+<td>${d.time}</td>
+<td>${d.number}</td>
+<td>${d.answer}</td>
+`;
+
+tr.onclick=()=>show(d.answer);
+
+table.appendChild(tr);
+
+});
+
+});
+
+}
+
+function show(text){
+
+const modal=document.getElementById("modal");
+const content=document.getElementById("modalContent");
+
+content.innerText=text;
+
+modal.style.display="flex";
+
+}
+
+document.getElementById("modal").onclick=()=>{
+document.getElementById("modal").style.display="none";
+}
+
+document.addEventListener("keydown",e=>{
+if(e.key==="Escape"){
+document.getElementById("modal").style.display="none";
+}
+});
+
+setInterval(load,5000);
+
+load();
+
+</script>
+
+</body>
+</html>
